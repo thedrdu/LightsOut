@@ -4,6 +4,32 @@ const lightState = {
     on: 'https://i.imgur.com/PSuDKse.png',
     off: 'https://i.imgur.com/XTGyvnc.png',
 };
+let selectMode = false;
+let highlightMode = false;
+
+function checkSolved(){
+    for(let i = 2; i >= 0; i--){
+        for(let j = 2; j >= 0; j--){
+            let div = document.getElementById(String(i) + String(j))
+            if(div.classList.contains("off")){
+                return false;
+            }
+        }
+    }
+    highlightMode = false;
+    return true;
+}
+
+function wipeHighlight(){
+    for(let i = 2; i >= 0; i--){
+        for(let j = 2; j >= 0; j--){
+            let div = document.getElementById(String(i) + String(j))
+            if(div.classList.contains("highlight")){
+                div.classList.remove("highlight");
+            }
+        }
+    }
+}
 
 function highlightSolution(){
     let num = 0;
@@ -56,6 +82,17 @@ function randomizeLights(){
     });
 }
 
+function toggleImage(div){
+    div.classList.toggle("on");
+    div.classList.toggle("off");
+    const currentState = div.classList.contains("on") ? "on" : "off";
+    div.getElementsByTagName('img')[0].src = lightState[currentState];
+    wipeHighlight();
+    if(highlightMode){
+        highlightSolution();
+    }
+}
+
 function toggleImages(div){
     div.classList.toggle("on");
     div.classList.toggle("off");
@@ -93,21 +130,38 @@ function handleKeyPress(e){
         randomizeLights();
     }
     if(e.key == "s"){
+        highlightMode = !highlightMode;
         highlightSolution();
     }
 }
 
 //initialize the game
 divs.forEach(function(div){
-    div.addEventListener('click', function() {
+    div.addEventListener('click', function(){
+        checkSolved();
         console.log(`The div with id ${div.id} was clicked!`);
-        toggleImages(div);
+        if(selectMode){
+            toggleImage(div)
+        }
+        else{
+            toggleImages(div);
+        }
     });
 });
 
 window.addEventListener('keydown', function (e) {
     console.log(`The ${e.key} key was pressed!`);
     handleKeyPress(e);
+    if(e.shiftKey){
+        selectMode = true;
+    }
 }, false);
+
+document.addEventListener('keyup', function (e) {
+    console.log(`The ${e.key} key was released!`);
+    if(!e.shiftKey){
+        selectMode = false;
+    }
+});
 
 randomizeLights();
