@@ -32,6 +32,7 @@ function wipeHighlight(){
 }
 
 function highlightSolution(){
+    wipeHighlight();
     let num = 0;
     //first, get the current grid state
     for(let i = 0; i < 3; i++){
@@ -52,12 +53,7 @@ function highlightSolution(){
         for(let j = 2; j >= 0; j--){
             let div = document.getElementById(String(i) + String(j))
             if(solution % 2 === 1){ //if light is on
-                if(div.classList.contains("highlight")){
-                    div.classList.remove("highlight");
-                }
-                else{
-                    div.classList.add("highlight");
-                }
+                div.classList.add("highlight");
             }
             else{
                 div.classList.remove("highlight");
@@ -80,6 +76,10 @@ function randomizeLights(){
         const currentState = div.classList.contains("on") ? "on" : "off";
         div.getElementsByTagName('img')[0].src = lightState[currentState];
     });
+    wipeHighlight();
+    if(highlightMode){
+        highlightSolution();
+    }
 }
 
 function toggleImage(div){
@@ -123,6 +123,12 @@ function toggleImages(div){
     if(div.classList.contains("highlight")){
         div.classList.remove("highlight");
     }
+    else{
+        if(highlightMode){
+            wipeHighlight();
+            highlightSolution();
+        }
+    }
 }
 
 function handleKeyPress(e){
@@ -131,14 +137,18 @@ function handleKeyPress(e){
     }
     if(e.key == "s"){
         highlightMode = !highlightMode;
-        highlightSolution();
+        if(highlightMode){
+            highlightSolution();
+        }
+        else{
+            wipeHighlight();
+        }
     }
 }
 
 //initialize the game
 divs.forEach(function(div){
     div.addEventListener('click', function(){
-        checkSolved();
         console.log(`The div with id ${div.id} was clicked!`);
         if(selectMode){
             toggleImage(div)
@@ -146,6 +156,10 @@ divs.forEach(function(div){
         else{
             toggleImages(div);
         }
+        if(highlightMode){
+            highlightSolution();
+        }
+        checkSolved();
     });
 });
 
