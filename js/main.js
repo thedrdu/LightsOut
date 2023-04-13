@@ -137,6 +137,7 @@ function handleKeyPress(e){
     }
     if(e.key == "s"){
         highlightMode = !highlightMode;
+        checkSolved();
         if(highlightMode){
             highlightSolution();
         }
